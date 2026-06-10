@@ -51,68 +51,6 @@ s1.setAttribute('crossorigin','*');
 s0.parentNode.insertBefore(s1,s0);
 })();
 </script>
-<!--End of Tawk.to Script-->
-        const canvas = document.getElementById('preview-canvas');
-        const ctx = canvas.getContext('2d');
-        let img = null, aspectLocked = true, ratio = 1;
-
-        const sliders = ['brightness','contrast','saturate','hue'];
-        sliders.forEach(id => document.getElementById(id).addEventListener('input', render));
-
-        document.getElementById('file-input').addEventListener('change', e => {
-            const file = e.target.files[0]; if (!file) return;
-            const reader = new FileReader();
-            reader.onload = ev => {
-                img = new Image();
-                img.onload = () => {
-                    document.getElementById('upload-area').classList.add('hidden');
-                    document.getElementById('editor').classList.remove('hidden');
-                    document.getElementById('rw').value = img.width;
-                    document.getElementById('rh').value = img.height;
-                    ratio = img.width / img.height;
-                    render();
-                };
-                img.src = ev.target.result;
-            };
-            reader.readAsDataURL(file);
-        });
-
-        document.getElementById('lock-btn').addEventListener('click', () => {
-            aspectLocked = !aspectLocked;
-            document.getElementById('lock-btn').innerHTML = aspectLocked ? '<i data-lucide="lock" style="width:18px;height:18px"></i>' : '<i data-lucide="unlock" style="width:18px;height:18px"></i>';
-            lucide.createIcons();
-        });
-
-        document.getElementById('rw').addEventListener('input', e => {
-            if (aspectLocked) document.getElementById('rh').value = Math.round(e.target.value / ratio);
-        });
-        document.getElementById('rh').addEventListener('input', e => {
-            if (aspectLocked) document.getElementById('rw').value = Math.round(e.target.value * ratio);
-        });
-
-        function render() {
-            if (!img) return;
-            const w = parseInt(document.getElementById('rw').value) || img.width;
-            const h = parseInt(document.getElementById('rh').value) || img.height;
-            canvas.width = w; canvas.height = h;
-            const b = document.getElementById('brightness').value;
-            const c = document.getElementById('contrast').value;
-            const s = document.getElementById('saturate').value;
-            const hu = document.getElementById('hue').value;
-            ctx.filter = `brightness(${b}%) contrast(${c}%) saturate(${s}%) hue-rotate(${hu}deg)`;
-            ctx.drawImage(img, 0, 0, w, h);
-        }
-
-        function downloadImage() {
-            if (!img) return;
-            render();
-            const link = document.createElement('a');
-            link.download = 'lisopic-edited.png';
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-        }
-
-        lucide.createIcons();
     </script>
  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a058ddd2bb4d7853',t:'MTc4MDQyODU2Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body></html>
