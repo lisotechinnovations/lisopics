@@ -1,11 +1,206 @@
-<html>
-<div style="position: relative; width: 100%; height: 0; padding-top: 100.0000%;
- padding-bottom: 0; box-shadow: 0 2px 8px 0 rgba(63,69,81,0.16); margin-top: 1.6em; margin-bottom: 0.9em; overflow: hidden;
- border-radius: 8px; will-change: transform;">
-  <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0;margin: 0;"
-    src="https://www.canva.com/design/DAHLc_t9NZU/Z0Ix2YRiCPbBreQQR9cYZA/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen">
-  </iframe>
-</div>
-<a href="https:&#x2F;&#x2F;www.canva.com&#x2F;design&#x2F;DAHLc_t9NZU&#x2F;Z0Ix2YRiCPbBreQQR9cYZA&#x2F;view?utm_content=DAHLc_t9NZU&amp;utm_campaign=designshare&amp;utm_medium=embeds&amp;utm_source=link" target="_blank" rel="noopener">Graphics -- Edit</a> by LISOTECH INNOVATIONS
+<!doctype html>
+<html lang="en"><head><script src="/_sdk/telemetry_sdk.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lisopic Editor</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet">
+  <style>
+        body { font-family: 'DM Sans', sans-serif; }
+        input[type="range"] { accent-color: #f43f5e; }
+        .upload-zone { border: 2px dashed #475569; transition: border-color 0.2s; }
+        .upload-zone:hover { border-color: #f43f5e; }
+    </style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="/_sdk/resizing_sdk.js" type="text/javascript"></script>
+ </head>
+ <body data-template-id="__page-root" class="min-h-screen" style="background: rgb(15, 23, 42);">
+  <header class="p-5 border-b border-slate-700/50">
+   <h1 data-template-id="app-title" class="canva-text text-2xl font-bold tracking-tight" style="color: rgb(248, 250, 252); font-weight: 700; font-style: normal; font-size: 32px;">Lisopic Editor</h1>
+  </header>
+  <main class="max-w-5xl mx-auto p-6 space-y-6">
+   <!-- Upload -->
+   <div id="upload-area" class="upload-zone rounded-xl p-10 text-center cursor-pointer" onclick="document.getElementById('file-input').click()">
+    <i data-lucide="upload" class="mx-auto mb-3 text-slate-400" style="width:48px;height:48px"></i>
+    <p data-template-id="upload-label" class="canva-text text-lg" style="color: rgb(148, 163, 184); font-weight: 400; font-style: normal; font-size: 16px;">Click or drop an image to start editing</p><input type="file" id="file-input" accept="image/*" class="hidden">
+   </div><!-- Editor -->
+   <div id="editor" class="hidden grid md:grid-cols-[1fr_280px] gap-6">
+    <div class="flex items-center justify-center bg-slate-800/50 rounded-xl p-4 overflow-hidden">
+     <canvas id="preview-canvas" class="max-w-full max-h-[60vh] rounded"></canvas>
+    </div>
+    <aside data-template-id="controls-panel" class="canva-panel space-y-5 p-5 rounded-xl" style="background: rgb(30, 41, 59);">
+     <h2 data-template-id="color-heading" class="canva-text font-bold text-sm uppercase tracking-wide" style="color: rgb(244, 63, 94); font-weight: 400; font-style: normal; font-size: 24px;">Color Adjustments</h2><label class="block"><span class="text-sm text-slate-300">Brightness</span> <input type="range" id="brightness" min="0" max="200" value="100" class="w-full"> </label> <label class="block"><span class="text-sm text-slate-300">Contrast</span> <input type="range" id="contrast" min="0" max="200" value="100" class="w-full"> </label> <label class="block"><span class="text-sm text-slate-300">Saturation</span> <input type="range" id="saturate" min="0" max="200" value="100" class="w-full"> </label> <label class="block"><span class="text-sm text-slate-300">Hue</span> <input type="range" id="hue" min="0" max="360" value="0" class="w-full"> </label>
+     <hr class="border-slate-700">
+     <h2 data-template-id="resize-heading" class="canva-text font-bold text-sm uppercase tracking-wide" style="color: rgb(244, 63, 94); font-weight: 400; font-style: normal; font-size: 24px;">Resize</h2>
+     <div class="flex items-center gap-2">
+      <input type="number" id="rw" class="w-20 bg-slate-800 border border-slate-600 rounded px-2 py-1 text-white text-sm" placeholder="W"> <button id="lock-btn" class="text-rose-400" title="Lock aspect ratio"><i data-lucide="lock" style="width:18px;height:18px"></i></button> <input type="number" id="rh" class="w-20 bg-slate-800 border border-slate-600 rounded px-2 py-1 text-white text-sm" placeholder="H">
+     </div><button data-template-id="download-btn" class="canva-button w-full py-2.5 rounded-lg font-semibold text-center" onclick="downloadImage()" style="background: rgb(244, 63, 94); color: rgb(255, 255, 255); font-weight: 600; font-style: normal; font-size: 16px;">Download Image</button>
+     <hr class="border-slate-700">
+     <h2 data-template-id="filters-heading" class="canva-text font-bold text-sm uppercase tracking-wide" style="color: rgb(244, 63, 94); font-weight: 400; font-style: normal; font-size: 24px;">Filter Presets</h2>
+     <div class="grid grid-cols-2 gap-2"><button onclick="applyPreset('vintage')" class="bg-slate-700 hover:bg-slate-600 px-3 py-2 rounded text-xs font-semibold text-white transition">Vintage</button> <button onclick="applyPreset('warm')" class="bg-slate-700 hover:bg-slate-600 px-3 py-2 rounded text-xs font-semibold text-white transition">Warm</button> <button onclick="applyPreset('cool')" class="bg-slate-700 hover:bg-slate-600 px-3 py-2 rounded text-xs font-semibold text-white transition">Cool</button> <button onclick="applyPreset('bw')" class="bg-slate-700 hover:bg-slate-600 px-3 py-2 rounded text-xs font-semibold text-white transition">B&amp;W</button> <button onclick="applyPreset('vivid')" class="bg-slate-700 hover:bg-slate-600 px-3 py-2 rounded text-xs font-semibold text-white transition">Vivid</button> <button onclick="applyPreset('dramatic')" class="bg-slate-700 hover:bg-slate-600 px-3 py-2 rounded text-xs font-semibold text-white transition">Dramatic</button>
+     </div>
+     <hr class="border-slate-700">
+     <h2 data-template-id="frames-heading" class="canva-text font-bold text-sm uppercase tracking-wide" style="color: rgb(244, 63, 94); font-weight: 400; font-style: normal; font-size: 24px;">Frames</h2>
+     <div class="grid grid-cols-2 gap-2"><button onclick="applyFrame('none')" class="bg-slate-700 hover:bg-slate-600 px-3 py-2 rounded text-xs font-semibold text-white transition">No Frame</button> <button onclick="applyFrame('simple')" class="bg-slate-700 hover:bg-slate-600 px-3 py-2 rounded text-xs font-semibold text-white transition">Simple</button> <button onclick="applyFrame('rounded')" class="bg-slate-700 hover:bg-slate-600 px-3 py-2 rounded text-xs font-semibold text-white transition">Rounded</button> <button onclick="applyFrame('polaroid')" class="bg-slate-700 hover:bg-slate-600 px-3 py-2 rounded text-xs font-semibold text-white transition">Polaroid</button> <button onclick="applyFrame('shadow')" class="bg-slate-700 hover:bg-slate-600 px-3 py-2 rounded text-xs font-semibold text-white transition">Shadow</button> <button onclick="applyFrame('gold')" class="bg-slate-700 hover:bg-slate-600 px-3 py-2 rounded text-xs font-semibold text-white transition">Gold</button>
+     </div>
+    </aside>
+   </div>
+  </main>
+  <script src="/_sdk/editing_sdk.js"></script>
+  <script>
+        const canvas = document.getElementById('preview-canvas');
+        const ctx = canvas.getContext('2d');
+        let img = null, aspectLocked = true, ratio = 1;
 
-</html>
+        const sliders = ['brightness','contrast','saturate','hue'];
+        sliders.forEach(id => document.getElementById(id).addEventListener('input', render));
+
+        document.getElementById('file-input').addEventListener('change', e => {
+            const file = e.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = ev => {
+                img = new Image();
+                img.onload = () => {
+                    document.getElementById('upload-area').classList.add('hidden');
+                    document.getElementById('editor').classList.remove('hidden');
+                    document.getElementById('rw').value = img.width;
+                    document.getElementById('rh').value = img.height;
+                    ratio = img.width / img.height;
+                    render();
+                };
+                img.src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        document.getElementById('lock-btn').addEventListener('click', () => {
+            aspectLocked = !aspectLocked;
+            document.getElementById('lock-btn').innerHTML = aspectLocked ? '<i data-lucide="lock" style="width:18px;height:18px"></i>' : '<i data-lucide="unlock" style="width:18px;height:18px"></i>';
+            lucide.createIcons();
+        });
+
+        document.getElementById('rw').addEventListener('input', e => {
+            if (aspectLocked) document.getElementById('rh').value = Math.round(e.target.value / ratio);
+        });
+        document.getElementById('rh').addEventListener('input', e => {
+            if (aspectLocked) document.getElementById('rw').value = Math.round(e.target.value * ratio);
+        });
+
+        function render() {
+            if (!img) return;
+            const w = parseInt(document.getElementById('rw').value) || img.width;
+            const h = parseInt(document.getElementById('rh').value) || img.height;
+            canvas.width = w; canvas.height = h;
+            const b = document.getElementById('brightness').value;
+            const c = document.getElementById('contrast').value;
+            const s = document.getElementById('saturate').value;
+            const hu = document.getElementById('hue').value;
+            ctx.filter = `brightness(${b}%) contrast(${c}%) saturate(${s}%) hue-rotate(${hu}deg)`;
+            ctx.drawImage(img, 0, 0, w, h);
+        }
+
+        let currentFrame = 'none';
+
+        function downloadImage() {
+            if (!img) return;
+            render();
+            const link = document.createElement('a');
+            link.download = 'lisopic-edited.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function applyPreset(preset) {
+            const presets = {
+                vintage: { brightness: 110, contrast: 90, saturate: 80, hue: 30 },
+                warm: { brightness: 105, contrast: 100, saturate: 120, hue: 15 },
+                cool: { brightness: 105, contrast: 100, saturate: 120, hue: 200 },
+                bw: { brightness: 100, contrast: 100, saturate: 0, hue: 0 },
+                vivid: { brightness: 100, contrast: 130, saturate: 150, hue: 0 },
+                dramatic: { brightness: 95, contrast: 150, saturate: 100, hue: 0 }
+            };
+            const values = presets[preset];
+            if (values) {
+                document.getElementById('brightness').value = values.brightness;
+                document.getElementById('contrast').value = values.contrast;
+                document.getElementById('saturate').value = values.saturate;
+                document.getElementById('hue').value = values.hue;
+                render();
+            }
+        }
+
+        function applyFrame(frame) {
+            currentFrame = frame;
+            render();
+        }
+
+        function renderWithFrame(ctx, w, h) {
+            const frames = {
+                none: () => {},
+                simple: () => {
+                    ctx.strokeStyle = '#f43f5e';
+                    ctx.lineWidth = 8;
+                    ctx.strokeRect(0, 0, w, h);
+                },
+                rounded: () => {
+                    const radius = 16;
+                    ctx.strokeStyle = '#f43f5e';
+                    ctx.lineWidth = 6;
+                    ctx.beginPath();
+                    ctx.moveTo(radius, 0); ctx.lineTo(w - radius, 0);
+                    ctx.arcTo(w, 0, w, radius, radius);
+                    ctx.lineTo(w, h - radius);
+                    ctx.arcTo(w, h, w - radius, h, radius);
+                    ctx.lineTo(radius, h);
+                    ctx.arcTo(0, h, 0, h - radius, radius);
+                    ctx.lineTo(0, radius);
+                    ctx.arcTo(0, 0, radius, 0, radius);
+                    ctx.closePath();
+                    ctx.stroke();
+                },
+                polaroid: () => {
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(-12, -12, w + 24, h + 40);
+                },
+                shadow: () => {
+                    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+                    ctx.shadowBlur = 20;
+                    ctx.shadowOffsetX = 8;
+                    ctx.shadowOffsetY = 8;
+                    ctx.fillStyle = '#f43f5e';
+                    ctx.fillRect(-4, -4, w + 8, h + 8);
+                    ctx.shadowColor = 'transparent';
+                },
+                gold: () => {
+                    ctx.strokeStyle = '#d4af37';
+                    ctx.lineWidth = 10;
+                    ctx.strokeRect(0, 0, w, h);
+                    ctx.strokeStyle = '#d4af37';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(4, 4, w - 8, h - 8);
+                }
+            };
+            if (frames[frame]) frames[frame]();
+        }
+
+        const originalRender = render;
+        function render() {
+            if (!img) return;
+            const w = parseInt(document.getElementById('rw').value) || img.width;
+            const h = parseInt(document.getElementById('rh').value) || img.height;
+            canvas.width = w; canvas.height = h;
+            const b = document.getElementById('brightness').value;
+            const c = document.getElementById('contrast').value;
+            const s = document.getElementById('saturate').value;
+            const hu = document.getElementById('hue').value;
+            ctx.filter = `brightness(${b}%) contrast(${c}%) saturate(${s}%) hue-rotate(${hu}deg)`;
+            ctx.drawImage(img, 0, 0, w, h);
+            ctx.filter = 'none';
+            renderWithFrame(ctx, w, h);
+        }
+
+        lucide.createIcons();
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0982fe61b462155',t:'MTc4MTA5MjUyNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+</body></html>
